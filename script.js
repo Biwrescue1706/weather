@@ -103,5 +103,5 @@ function getThaiDateParts(date) {
 // ✅ เริ่มโหลดเมื่อเปิดหน้า
 window.addEventListener("load", () => {
   fetchSensorData();
-  setInterval(fetchSensorData, 500); // โหลดทุก 1 วินาที
+  setInterval(fetchSensorData, 500); // โหลดทุก 0.5 วินาที
 });
