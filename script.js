@@ -39,14 +39,22 @@ async function askAI() {
   }
 
   try {
-    answerBox.textContent = "⏳ กำลังถาม AI...";
+    answerBox.innerHTML = "⏳ กำลังถาม AI...";
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
     const data = await response.json();
-    answerBox.textContent = data.answer || "❌ ไม่มีคำตอบจาก AI";
+
+    if (data.answer) {
+      answerBox.innerHTML = `
+        <p><strong>🙋‍♂️ คำถาม:</strong> ${question}</p>
+        <p><strong>🤖 AI:</strong> ${data.answer}</p>
+      `;
+    } else {
+      answerBox.textContent = "❌ ไม่มีคำตอบจาก AI";
+    }
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
