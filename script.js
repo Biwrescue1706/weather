@@ -1,6 +1,6 @@
 const BASE_URL = "https://ce395backend.loca.lt/"; 
-const API_URL = `${BASE_URL}latest`; // สำหรับโหลดข้อมูลเซ็นเซอร์
-const ASK_AI_URL = `${BASE_URL}ask-ai`; // สำหรับถาม AI
+const API_URL = ${BASE_URL}/latest; // สำหรับโหลดข้อมูลเซ็นเซอร์
+const ASK_AI_URL = ${BASE_URL}/ask-ai; // สำหรับถาม AI
 
 // ✅ โหลดข้อมูลเซ็นเซอร์ล่าสุด
 async function fetchSensorData() {
@@ -21,17 +21,16 @@ async function fetchSensorData() {
     // วันที่และเวลา (แบบไทย)
     const now = new Date();
     const thaiDate = getThaiDateParts(now);
-    document.getElementById("datestamp").textContent = `${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year}`;
-    document.getElementById("timestamp").textContent = `${thaiDate.time} น.`;
+    document.getElementById("datestamp").textContent = ${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year};
+    document.getElementById("timestamp").textContent = ${thaiDate.time} น.;
   } catch (error) {
     console.error("❌ โหลดข้อมูลเซ็นเซอร์ไม่สำเร็จ:", error);
   }
 }
 
-// ✅ ถาม AI ผ่าน backend และแสดงคำถาม + คำตอบ + ล้างช่อง input
+// ✅ ถาม AI ผ่าน backend
 async function askAI() {
-  const input = document.getElementById("user-question");
-  const question = input.value.trim();
+  const question = document.getElementById("user-question").value.trim();
   const answerBox = document.getElementById("ai-answer");
 
   if (!question) {
@@ -40,25 +39,14 @@ async function askAI() {
   }
 
   try {
-    answerBox.innerHTML = "⏳ กำลังถาม AI...";
+    answerBox.textContent = "⏳ กำลังถาม AI...";
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
-
     const data = await response.json();
-
-    if (data.answer) {
-      answerBox.innerHTML = `
-        <p><strong>🙋‍♂️ คุณถามว่า:</strong> ${question}</p>
-        <p><strong>🤖 คำตอบจาก AI:</strong> ${data.answer}</p>
-      `;
-    } else {
-      answerBox.textContent = "❌ ไม่มีคำตอบจาก AI";
-    }
-
-    input.value = ""; // ✅ ล้างช่อง input หลังถาม
+    answerBox.textContent = data.answer || "❌ ไม่มีคำตอบจาก AI";
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
