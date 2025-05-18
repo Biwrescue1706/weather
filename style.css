@@ -8,7 +8,7 @@
 /* พื้นหลังและฟอนต์ */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+  background-color: #4caf50;
   color: #222;
   padding: 20px;
   line-height: 1.6;
