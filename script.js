@@ -30,7 +30,8 @@ async function fetchSensorData() {
 
 // ✅ ถาม AI ผ่าน backend
 async function askAI() {
-  const question = document.getElementById("user-question").value.trim();
+  const input = document.getElementById("user-question");
+  const question = input.value.trim();
   const answerBox = document.getElementById("ai-answer");
 
   if (!question) {
@@ -39,14 +40,20 @@ async function askAI() {
   }
 
   try {
-    answerBox.textContent = "⏳ กำลังถาม AI...";
+    answerBox.textContent = `📨 คำถาม: ${question}\n⏳ กำลังถาม AI...`;
+    input.value = ""; // 🧹 ล้างข้อความในช่อง input
+    
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
+    
     const data = await response.json();
     answerBox.textContent = data.answer || "❌ ไม่มีคำตอบจาก AI";
+    
+    answerBox.textContent = `📨 คำถาม: ${question}\n🤖 AI: ${aiAnswer}`;
+    
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
