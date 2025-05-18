@@ -1,67 +1,125 @@
-/* รีเซ็ตพื้นฐาน */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* พื้นหลังและฟอนต์ */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #4caf50;
-  color: #222;
+  margin: 0;
   padding: 20px;
-  line-height: 1.6;
+  color: #222;
+  text-align: center;
   font-size: 16px;
 }
 
-/* หัวข้อโปรเจกต์ */
+#ai-answer {
+  margin-top: 15px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.ai-box,
+.header,
+.datetime-box {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.ai-box {
+  background-color: #e0f7fa;
+  margin-top: 40px;
+}
+
+.ai-box h2 {
+  color: #00796b;
+  margin-bottom: 20px;
+}
+
+.ai-container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+
+.ai-answer-box {
+  min-height: 80px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px dashed #aaa;
+  background-color: #fff;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.ai-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ai-form input {
+  width: 65%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.ai-form button {
+  background-color: #00acc1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.ai-form button:hover {
+  background-color: #008ba3;
+}
+
 .header {
-  text-align: center;
   background-color: #fff;
   margin-top: 20px;
-  margin-bottom: 30px;
-  padding: 20px;
-  border-radius: 30px;
+  text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
 }
 
 .header h1 {
   font-size: 2.3rem;
-  color: #00796b;
   margin-bottom: 8px;
 }
 
 .header h2 {
   font-size: 1.3rem;
-  color: #030303;
   font-weight: normal;
+  color: #030303;
 }
 
-/* กล่องวันและเวลา */
 .datetime-box {
-  text-align: center;
   background-color: #fff;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 20px;
-  font-size: 1.1rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  font-size: 1.1rem;
 }
 
-.date-text {
+.datetime-box p {
   margin: 6px 0;
 }
 
-.bold-text {
-  font-weight: bold;
-}
-
-/* การ์ดเซ็นเซอร์ */
 .sensor-wrapper {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 30px;
   margin: 30px auto;
   padding: 0 10px;
@@ -73,7 +131,6 @@ body {
   padding: 24px;
   width: 100%;
   max-width: 300px;
-  text-align: center;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -102,77 +159,88 @@ body {
   font-size: 1rem;
   margin-top: 8px;
   color: #333;
-  font-weight: bold;
 }
 
-/* ถาม AI */
-.ai-box {
-  background-color: #e0f2f1;
-  padding: 20px;
-  border-radius: 16px;
-  max-width: 700px;
-  margin: 40px auto 0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+/* สีพื้นตามค่าต่างๆ */
+.temp-cool {
+  background-color: #b2ebf2;
 }
 
-.ai-box h2 {
-  text-align: center;
-  margin-bottom: 15px;
-  color: #004d40;
+.temp-hot {
+  background-color: #ffa07a;
 }
 
-.ai-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  padding: 15px;
-  background-color: #f9f9f9;
+.temp-very-cold {
+  background-color: #81d4fa;
 }
 
-.ai-answer-box {
-  background-color: #ffffff;
-  border: 1px dashed #aaa;
-  padding: 15px;
-  border-radius: 10px;
-  min-height: 80px;
-  font-size: 1.1rem;
-  color: #333;
-  text-align: left;
-  line-height: 1.5;
+.temp-very-hot {
+  background-color: #ff6b6b;
 }
 
-.ai-form {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
+.temp-warm {
+  background-color: #ffd580;
 }
 
-.ai-form input {
-  flex: 1;
-  min-width: 200px;
-  padding: 10px;
-  border: 2px solid #009688;
-  border-radius: 8px;
-  font-size: 1rem;
+.light-bright {
+  background-color: #fff7a1;
 }
 
-.ai-form button {
-  padding: 10px 20px;
-  background-color: #00796b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.light-cloudy {
+  background-color: #d3d3d3;
 }
 
-.ai-form button:hover {
-  background-color: #004d40;
+.light-dark {
+  background-color: #555;
+  color: #fff;
+}
+
+.light-dim {
+  background-color: #dcdcdc;
+}
+
+.light-natural {
+  background-color: #c6e2ff;
+}
+
+.light-office {
+  background-color: #e6f7ff;
+}
+
+.light-room {
+  background-color: #f7f7f7;
+}
+
+.light-very-bright {
+  background-color: #ffe066;
+}
+
+.humidity-level-1 {
+  background-color: #fff;
+}
+
+.humidity-level-2 {
+  background-color: #f8fbff;
+}
+
+.humidity-level-3 {
+  background-color: #f0f9ff;
+}
+
+.humidity-level-4 {
+  background-color: #e1f5fe;
+}
+
+.humidity-level-5 {
+  background-color: #cce7ff;
+}
+
+.humidity-level-6 {
+  background-color: #b3e5fc;
+}
+
+.humidity-level-7 {
+  background-color: #9be7ff;
 }
 
 /* Responsive */
@@ -202,6 +270,10 @@ body {
 
   .header h2 {
     font-size: 1.1rem;
+  }
+
+  .date-text {
+    font-size: 1.5rem;
   }
 
   .sensor-card p {
