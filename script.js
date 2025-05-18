@@ -1,6 +1,6 @@
-const BASE_URL = "https://bay-tanzania-mass-him.trycloudflare.com"; 
-const API_URL = `${BASE_URL}/latest`;  // สำหรับโหลดข้อมูลเซ็นเซอร์
-const ASK_AI_URL = `${BASE_URL}/ask-ai`;  // สำหรับถาม AI
+const BASE_URL = "https://bay-tanzania-mass-him.trycloudflare.com";
+const API_URL = `${BASE_URL}/latest`;      // โหลดข้อมูลเซ็นเซอร์
+const ASK_AI_URL = `${BASE_URL}/ask-ai`;   // ถาม AI
 
 // ✅ โหลดข้อมูลเซ็นเซอร์ล่าสุด
 async function fetchSensorData() {
@@ -21,8 +21,8 @@ async function fetchSensorData() {
     // วันที่และเวลา (แบบไทย)
     const now = new Date();
     const thaiDate = getThaiDateParts(now);
-    document.getElementById("datestamp").textContent = ${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year};
-    document.getElementById("timestamp").textContent = ${thaiDate.time} น.;
+    document.getElementById("datestamp").textContent = `${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year}`;
+    document.getElementById("timestamp").textContent = `${thaiDate.time} น.`;
   } catch (error) {
     console.error("❌ โหลดข้อมูลเซ็นเซอร์ไม่สำเร็จ:", error);
   }
@@ -103,5 +103,5 @@ function getThaiDateParts(date) {
 // ✅ เริ่มโหลดเมื่อเปิดหน้า
 window.addEventListener("load", () => {
   fetchSensorData();
-  setInterval(fetchSensorData, 500); // โหลดทุก 0.5 วินาที
+  setInterval(fetchSensorData, 1000); // โหลดทุก 1 วินาที
 });
