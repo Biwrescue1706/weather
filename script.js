@@ -36,7 +36,9 @@ async function askAI() {
   }
 
   try {
-    answerBox.innerHTML = `📨 คำถาม : ${question} <br> ⏳ กำลังถาม AI...`;
+    answerBox.innerHTML = `
+    <p>📨 คำถาม : ${question} </p>
+    <p>⏳ กำลังถาม AI... </p>`;
 
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
@@ -47,8 +49,11 @@ async function askAI() {
     const data = await response.json();
     const aiAnswer = data.answer ?? "❌ ไม่มีคำตอบจาก AI";
 
-    answerBox.innerHTML = `📨 คำถาม : ${question} <br> 🤖 คำตอบ ของ AI : ${aiAnswer}`;
-
+    answerBox.innerHTML = `  
+    <p>📨 คำถาม : ${question}</p>
+    <p>🤖 คำตอบ ของ AI : ${aiAnswer}</p>
+    `;
+    
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
