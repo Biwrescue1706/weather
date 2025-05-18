@@ -1,6 +1,6 @@
-const BASE_URL = "https://jet-wishlist-hypothesis-elvis.trycloudflare.com/"; 
-const API_URL = ${BASE_URL}latest; // สำหรับโหลดข้อมูลเซ็นเซอร์
-const ASK_AI_URL = ${BASE_URL}ask-ai; // สำหรับถาม AI
+const BASE_URL = "https://jet-wishlist-hypothesis-elvis.trycloudflare.com"; 
+const API_URL = ${BASE_URL}/latest; // สำหรับโหลดข้อมูลเซ็นเซอร์
+const ASK_AI_URL = ${BASE_URL}/ask-ai; // สำหรับถาม AI
 
 // ✅ โหลดข้อมูลเซ็นเซอร์ล่าสุด
 async function fetchSensorData() {
