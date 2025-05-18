@@ -1,6 +1,6 @@
-const BASE_URL = "https://mutual-parking-eur-grip.trycloudflare.com"; 
-const API_URL = `${BASE_URL}/latest`; // สำหรับโหลดข้อมูลเซ็นเซอร์
-const ASK_AI_URL = `${BASE_URL}/ask-ai`; // สำหรับถาม AI
+const BASE_URL = "https://improvement-maintenance-maine-fc.trycloudflare.com/"; 
+const API_URL = `${BASE_URL}latest`; // สำหรับโหลดข้อมูลเซ็นเซอร์
+const ASK_AI_URL = `${BASE_URL}ask-ai`; // สำหรับถาม AI
 
 // ✅ โหลดข้อมูลเซ็นเซอร์ล่าสุด
 async function fetchSensorData() {
@@ -28,9 +28,10 @@ async function fetchSensorData() {
   }
 }
 
-// ✅ ถาม AI ผ่าน backend
+// ✅ ถาม AI ผ่าน backend และแสดงคำถาม + คำตอบ + ล้างช่อง input
 async function askAI() {
-  const question = document.getElementById("user-question").value.trim();
+  const input = document.getElementById("user-question");
+  const question = input.value.trim();
   const answerBox = document.getElementById("ai-answer");
 
   if (!question) {
@@ -45,16 +46,19 @@ async function askAI() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
+
     const data = await response.json();
 
     if (data.answer) {
       answerBox.innerHTML = `
-        <p><strong>🙋‍♂️ คำถาม:</strong> ${question}</p>
-        <p><strong>🤖 AI:</strong> ${data.answer}</p>
+        <p><strong>🙋‍♂️ คุณถามว่า:</strong> ${question}</p>
+        <p><strong>🤖 คำตอบจาก AI:</strong> ${data.answer}</p>
       `;
     } else {
       answerBox.textContent = "❌ ไม่มีคำตอบจาก AI";
     }
+
+    input.value = ""; // ✅ ล้างช่อง input หลังถาม
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
