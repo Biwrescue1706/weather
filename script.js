@@ -10,7 +10,6 @@ async function fetchSensorData() {
 
     const { light, temp, humidity } = data;
 
-    // แสดงค่าต่าง ๆ
     document.getElementById("light").textContent = light;
     document.getElementById("temp").textContent = temp;
     document.getElementById("humidity").textContent = humidity;
@@ -18,7 +17,6 @@ async function fetchSensorData() {
     document.getElementById("temp-status").textContent = getTempStatusText(temp);
     document.getElementById("humidity-status").textContent = getHumidityStatusText(humidity);
 
-    // วันที่และเวลา (แบบไทย)
     const now = new Date();
     const thaiDate = getThaiDateParts(now);
     document.getElementById("datestamp").textContent = `${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year}`;
@@ -41,19 +39,18 @@ async function askAI() {
 
   try {
     answerBox.textContent = `📨 คำถาม: ${question}\n⏳ กำลังถาม AI...`;
-    input.value = ""; // 🧹 ล้างข้อความในช่อง input
-    
+    input.value = ""; // ล้าง input
+
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
-    
+
     const data = await response.json();
-    answerBox.textContent = data.answer || "❌ ไม่มีคำตอบจาก AI";
-    
+    const aiAnswer = data.answer || "❌ ไม่มีคำตอบจาก AI";
+
     answerBox.textContent = `📨 คำถาม: ${question}\n🤖 AI: ${aiAnswer}`;
-    
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
     answerBox.textContent = "❌ ไม่สามารถติดต่อ AI ได้";
