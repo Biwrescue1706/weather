@@ -1,4 +1,4 @@
-const BASE_URL = "https://jet-wishlist-hypothesis-elvis.trycloudflare.com"; 
+const BASE_URL = "https://bay-tanzania-mass-him.trycloudflare.com"; 
 const API_URL = ${BASE_URL}/latest; // สำหรับโหลดข้อมูลเซ็นเซอร์
 const ASK_AI_URL = ${BASE_URL}/ask-ai; // สำหรับถาม AI
 
