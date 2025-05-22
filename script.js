@@ -29,7 +29,7 @@ async function fetchSensorData() {
 // ถาม AI ผ่าน backend
 async function askAI() {
   const input = document.getElementById("user-question");
-  const question = input.value.trim();
+  const question = input.value.trim(); // ✅ เก็บค่าคำถามก่อน
   const answerBox = document.getElementById("ai-answer");
 
   if (!question) {
@@ -37,14 +37,12 @@ async function askAI() {
     return;
   }
 
-  // ล้าง input ทันทีหลังส่งคำถาม
-  input.value = "";
+  // แสดงสถานะกำลังถาม AI
+  answerBox.innerHTML = `
+    <p>📨 คำถาม : ${question}</p>
+    <p>⏳ กำลังถาม AI...</p>`;
 
   try {
-    answerBox.innerHTML = `
-      <p>📨 คำถาม : ${question} </p>
-      <p>⏳ กำลังถาม AI... </p>`;
-
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,9 +54,13 @@ async function askAI() {
 
     const aiAnswer = data.response ?? data.answer ?? "❌ ไม่มีคำตอบจาก AI";
 
+    // แสดงคำตอบจาก AI ก่อน แล้วค่อยล้าง input
     answerBox.innerHTML = `
       <p>📨 คำถาม : ${question}</p>
       <p>🤖 คำตอบของ AI : ${aiAnswer}</p>`;
+
+    input.value = "";    // ✅ ล้างช่อง input หลังแสดงผลแล้ว
+    input.focus();       // ✅ โฟกัสกลับไปยังช่อง input
 
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
