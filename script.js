@@ -37,10 +37,13 @@ async function askAI() {
     return;
   }
 
+  // ล้าง input ทันทีหลังส่งคำถาม
+  input.value = "";
+
   try {
     answerBox.innerHTML = `
-    <p>📨 คำถาม : ${question} </p>
-    <p>⏳ กำลังถาม AI... </p>`;
+      <p>📨 คำถาม : ${question} </p>
+      <p>⏳ กำลังถาม AI... </p>`;
 
     const response = await fetch(ASK_AI_URL, {
       method: "POST",
@@ -49,14 +52,13 @@ async function askAI() {
     });
 
     const data = await response.json();
-    const aiAnswer = data.answer ?? "❌ ไม่มีคำตอบจาก AI";
+    console.log("AI Raw Response:", data);
 
-    answerBox.innerHTML = `  
-    <p>📨 คำถาม : ${question}</p>
-    <p>🤖 คำตอบ ของ AI : ${aiAnswer}</p>
-    `;
+    const aiAnswer = data.response ?? data.answer ?? "❌ ไม่มีคำตอบจาก AI";
 
-    input.value = ""; // ✅ ล้างช่อง input หลังจาก AI ตอบแล้ว
+    answerBox.innerHTML = `
+      <p>📨 คำถาม : ${question}</p>
+      <p>🤖 คำตอบของ AI : ${aiAnswer}</p>`;
 
   } catch (error) {
     console.error("❌ เกิดข้อผิดพลาด:", error);
@@ -114,5 +116,5 @@ function getThaiDateParts(date) {
 // เริ่มโหลดเมื่อเปิดหน้า
 window.addEventListener("load", () => {
   fetchSensorData();
-  setInterval(fetchSensorData, 500); // โหลดทุก 1 วินาที
+  setInterval(fetchSensorData, 500); // โหลดทุก 0.5 วินาที
 });
