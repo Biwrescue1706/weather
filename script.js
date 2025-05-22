@@ -1,4 +1,4 @@
-const BASE_URL = "https://respondent-catalog-contrast-clothing.trycloudflare.com";
+const BASE_URL = "https://biwbong.loca.lt";
 const API_URL = `${BASE_URL}/latest`;      // โหลดข้อมูลเซ็นเซอร์
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;   // ถาม AI
 
