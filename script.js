@@ -1,4 +1,4 @@
-const BASE_URL = "https://elvis-clone-draw-specialties.trycloudflare.com";
+const BASE_URL = "https://disclaimer-telephone-celtic-crm.trycloudflare.com";
 const API_URL = `${BASE_URL}/latest`;      // โหลดข้อมูลเซ็นเซอร์
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;   // ถาม AI
 
