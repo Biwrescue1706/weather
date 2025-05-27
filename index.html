@@ -9,48 +9,51 @@
 <body>
   <div class="container">
     <!-- เวลากลางบน -->
-    <div class="datetime-card">
-      <h1>⏰ แสดงเวลาปัจจุบัน</h1>
+    <div class="datetime-card glass">
+      <h1>⏰ เวลาปัจจุบัน</h1>
       <h1>🕒 <span id="timestamp">--</span></h1>
       <h2>📅 <span id="datestamp">--</span></h2>
     </div>
 
     <!-- ค่าจากเซนเซอร์ -->
     <div class="grid-info">
-      <div class="card">
+      <div class="card glass">
         <h2>🌡 อุณหภูมิ</h2>
         <p><span id="temp">--</span> °C</p>
         <p id="temp-status">--</p>
       </div>
-      <div class="card">
+      <div class="card glass">
         <h2>💧 ความชื้น</h2>
         <p><span id="humidity">--</span> %</p>
         <p id="humidity-status">--</p>
       </div>
-      <div class="card">
+      <div class="card glass">
         <h2>💡 แสง</h2>
         <p><span id="light">--</span> lux</p>
         <p id="light-status">--</p>
       </div>
-      <div class="card">
-        <h2>🤖 คำแนะนำจาก AI</h2>
+
+      <!-- 🔎 กล่องแสดงคำแนะนำอัตโนมัติ (ไม่เกี่ยวกับแชท) -->
+      <div class="card glass">
+        <h3>🤖 คำแนะนำจาก AI</h3>
         <p id="ai-summary">--</p>
       </div>
     </div>
 
-    <!-- ช่องแชทแนวตั้ง -->
-    <div class="chat-box">
+    <!-- กล่องแชท -->
+    <div class="chat-box glass">
       <h2>💬 ถาม AI เกี่ยวกับสภาพอากาศ</h2>
       <div class="chat-messages" id="chat-messages">
-        <!-- จะถูกเติมข้อความแบบ .message ผ่าน JS -->
+        <!-- ระบบแชทจะเติมข้อความตรงนี้ -->
       </div>
       <div class="chat-input">
         <input type="text" id="user-question" placeholder="พิมพ์ เช่น ตอนนี้ควรตากผ้าไหม?" />
-        <button onclick="askAI()">ส่ง</button>
+        <button onclick="askAI()">📤</button>
       </div>
     </div>
   </div>
 
   <script src="script.js"></script>
 </body>
+
 </html>
