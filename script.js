@@ -1,4 +1,4 @@
-const BASE_URL = "https://displays-secret-tool-fixes.trycloudflare.com";
+const BASE_URL = "https://pmid-broadway-shoulder-mysterious.trycloudflare.com";
 const API_URL = `${BASE_URL}/latest`;
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;
 
