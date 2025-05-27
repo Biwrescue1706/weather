@@ -1,4 +1,4 @@
-const BASE_URL = "https://pmid-broadway-shoulder-mysterious.trycloudflare.com";
+const BASE_URL = "https://bite-vegetarian-folding-weddings.trycloudflare.com";
 const API_URL = `${BASE_URL}/latest`;
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;
 
@@ -175,8 +175,8 @@ function fetchAISummaryOnInterval() {
 window.addEventListener("load", () => {
   fetchSensorData();
   setInterval(fetchSensorData, 1000); // ดึงค่าจากเซนเซอร์ทุก 1 วินาที
-  fetchAISummaryOnInterval();         // เรียกวิเคราะห์คำแนะนำทันที
-  setInterval(fetchAISummaryOnInterval, 60000); // จากนั้นทำทุก 1 นาที
+  // fetchAISummaryOnInterval();         // เรียกวิเคราะห์คำแนะนำทันที
+  // setInterval(fetchAISummaryOnInterval, 60000); // จากนั้นทำทุก 1 นาที
 });
 
 // รองรับ Enter เพื่อถาม AI
