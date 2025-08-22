@@ -151,7 +151,7 @@ async function askAI() {
   // loading bubble
   const loading = document.createElement("div");
   loading.className = "message ai";
-  loading.innerHTML = `<div class="sender">🤖AI:</div><div class="answer">⏳ กำลังถาม AI...</div>`;
+  loading.innerHTML = `<div class="sender">🤖 คำตอบ จาก AI:</div><div class="answer">⏳ กำลังถาม AI...</div>`;
   chatBox.appendChild(loading);
   chatBox.scrollTop = chatBox.scrollHeight;
 
