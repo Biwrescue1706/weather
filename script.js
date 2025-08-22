@@ -185,7 +185,7 @@ async function init() {
 
   // 3) ตั้ง interval
   setInterval(fetchSensorData, 1000);            // ดึงค่าจากเซ็นเซอร์ทุก 1 วิ
-  setInterval(fetchAISummaryOnInterval, 300000); // สรุป AI ทุก 5 นาที
+  // setInterval(fetchAISummaryOnInterval, 300000); // สรุป AI ทุก 5 นาที
 
   // 4) bind enter สำหรับถาม AI
   const input = document.getElementById("user-question");
