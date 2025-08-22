@@ -1,66 +1,145 @@
+// ====== Config ======
 const BASE_URL = "https://ce395backend-1.onrender.com";
 const API_URL = `${BASE_URL}/latest`;
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;
 
-// ใช้เก็บ timestamp ครั้งล่าสุดที่ดึงคำแนะนำ AI อัตโนมัติ
+// เก็บค่าล่าสุดจากเซนเซอร์ไว้ในหน่วยความจำ (ไม่อ่านจาก DOM)
+let currentSensor = null;
+// กันยิง AI ถี่เกิน (ms)
 let lastAISummary = 0;
 
-// โหลดข้อมูลจากเซนเซอร์ (แสง, อุณหภูมิ, ความชื้น)
+// ====== Utils (Thai date/time & status texts) ======
+function getThaiDateParts(date) {
+  const optionsDate = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
+  const optionsTime = { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false };
+  const thDate = new Intl.DateTimeFormat("th-TH", optionsDate).formatToParts(date);
+  const thTime = new Intl.DateTimeFormat("th-TH", optionsTime).format(date);
+  return {
+    dayOfWeek: thDate.find(p => p.type === "weekday")?.value ?? "",
+    day:thDate.find(p => p.type === "day")?.value ?? "",
+    month:thDate.find(p => p.type === "month")?.value ?? "",
+    year:thDate.find(p => p.type === "year")?.value ?? "",
+    time: thTime,
+  };
+}
+
+function getLightStatusText(light) {
+  if (light > 50000) return "สว่างจัดมาก";
+  if (light > 10000) return "สว่างมาก";
+  if (light > 5000)  return "สว่างปานกลาง";
+  if (light > 1000)  return "ค่อนข้างสว่าง";
+  if (light > 500)   return "แสงพอใช้";
+  if (light > 100)   return "แสงน้อย";
+  if (light > 10)    return "มืดสลัว";
+  return "มืดมาก";
+}
+function getTempStatusText(temp) {
+  if (temp > 35) return "อุณหภูมิร้อนมาก";
+  if (temp >= 30) return "อุณหภูมิร้อน";
+  if (temp >= 25) return "อุณหภูมิอุ่นๆ";
+  if (temp >= 20) return "อุณหภูมิพอดี";
+  return "อุณหูมิเย็น";
+}
+function getHumidityStatusText(h) {
+  if (h > 85) return "ชื้นมาก อากาศอึดอัด";
+  if (h > 70) return "อากาศชื้น เหนียวตัว";
+  if (h > 60) return "เริ่มชื้น";
+  if (h > 40) return "อากาศสบาย";
+  if (h > 30) return "ค่อนข้างแห้ง";
+  if (h > 20) return "แห้งมาก";
+  return "อากาศแห้งมาก 🏜️";
+}
+
+// ====== Sensor fetch ======
 async function fetchSensorData() {
   try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    const { light, temp, humidity } = data;
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { light, temp, humidity } = await res.json();
 
-    // แสดงค่าที่อ่านได้
+    // update cache
+    currentSensor = { light, temp, humidity };
+
+    // update UI
     document.getElementById("light").textContent = light;
     document.getElementById("temp").textContent = temp;
     document.getElementById("humidity").textContent = humidity;
 
-    // วิเคราะห์สถานะ
     document.getElementById("light-status").textContent = getLightStatusText(light);
     document.getElementById("temp-status").textContent = getTempStatusText(temp);
     document.getElementById("humidity-status").textContent = getHumidityStatusText(humidity);
 
-    // อัปเดตเวลาปัจจุบัน
     const now = new Date();
-    const thaiDate = getThaiDateParts(now);
-    document.getElementById("datestamp").textContent = `${thaiDate.dayOfWeek}ที่ ${thaiDate.day} ${thaiDate.month} พ.ศ. ${thaiDate.year}`;
-    document.getElementById("timestamp").textContent = `${thaiDate.time} น.`;
-  } catch (error) {
-    console.error("❌ โหลดข้อมูลเซ็นเซอร์ไม่สำเร็จ:", error);
+    const th = getThaiDateParts(now);
+    document.getElementById("datestamp").textContent = `${th.dayOfWeek}ที่ ${th.day} ${th.month} พ.ศ. ${th.year}`;
+    document.getElementById("timestamp").textContent = `${th.time} น.`;
+
+    return currentSensor;
+  } catch (err) {
+    console.error("❌ โหลดข้อมูลเซ็นเซอร์ไม่สำเร็จ:", err);
+    return null;
   }
 }
 
-// เรียก AI ให้วิเคราะห์คำแนะนำโดยอัตโนมัติ
+// ====== AI summary (auto) ======
 async function fetchAISummary(light, temp, humidity) {
   try {
-    const response = await fetch(ASK_AI_URL, {
+    const now = Date.now();
+    if (now - lastAISummary < 30_000) return; // กันยิงถี่เกิน 30 วิ
+
+    document.getElementById("ai-summary").textContent = "⏳ กำลังสรุปด้วย AI...";
+
+    const res = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        question: "วิเคราะห์สภาพอากาศขณะนี้",
-        light,
-        temp,
-        humidity,
-      }),
+      // backend ปัจจุบันใช้ lastSensorData ฝั่งเซิร์ฟเวอร์เป็นหลัก ส่งพารามฯ ไปก็ไม่เสียหาย
+      body: JSON.stringify({ question: "วิเคราะห์สภาพอากาศขณะนี้", light, temp, humidity }),
     });
-    const data = await response.json();
 
-    // อัปเดตข้อความในกล่องแสดงคำแนะนำอัตโนมัติ
-    document.getElementById("ai-summary").textContent = data.answer || "ไม่มีคำแนะนำจาก AI";
-  } catch (error) {
-    console.error("❌ โหลดคำแนะนำจาก AI ไม่สำเร็จ:", error);
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById("ai-summary").textContent = data?.error || "❌ ไม่สามารถโหลดคำแนะนำได้";
+      return;
+    }
+
+    document.getElementById("ai-summary").textContent = data?.answer || "ไม่มีคำแนะนำจาก AI";
+    lastAISummary = now;
+  } catch (e) {
+    console.error("❌ โหลดคำแนะนำจาก AI ไม่สำเร็จ:", e);
     document.getElementById("ai-summary").textContent = "❌ ไม่สามารถโหลดคำแนะนำได้";
   }
 }
+function fetchAISummaryOnInterval() {
+  if (!currentSensor) return;
+  const { light, temp, humidity } = currentSensor;
+  fetchAISummary(light, temp, humidity);
+}
 
-// รับคำถามจากช่องแชท แล้วส่งให้ AI
+// ====== Chat ask ======
+function addMessage(text, sender) {
+  const chat = document.getElementById("chat-messages");
+  const wrap = document.createElement("div");
+  wrap.className = `message ${sender === "คุณ" ? "user" : "ai"}`;
+
+  const name = document.createElement("div");
+  name.className = "sender";
+  name.textContent = sender === "คุณ" ? "คุณ:" : "🤖AI:";
+
+  const msg = document.createElement("div");
+  msg.className = sender === "คุณ" ? "question" : "answer";
+  msg.textContent = text;
+
+  wrap.appendChild(name);
+  wrap.appendChild(msg);
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+
 async function askAI() {
   const input = document.getElementById("user-question");
   const question = input.value.trim();
   const chatBox = document.getElementById("chat-messages");
-
   if (!question) {
     addMessage("⚠️ กรุณาพิมพ์คำถามก่อนนะครับ", "AI");
     return;
@@ -69,117 +148,50 @@ async function askAI() {
   addMessage(question, "คุณ");
   input.value = "";
 
-  // แสดงข้อความกำลังโหลด
-  const loadingMsg = document.createElement("div");
-  loadingMsg.className = "message ai";
-  loadingMsg.innerHTML = `<div class="sender">🤖AI:</div><div class="answer">⏳ กำลังถาม AI...</div>`;
-  chatBox.appendChild(loadingMsg);
+  // loading bubble
+  const loading = document.createElement("div");
+  loading.className = "message ai";
+  loading.innerHTML = `<div class="sender">🤖AI:</div><div class="answer">⏳ กำลังถาม AI...</div>`;
+  chatBox.appendChild(loading);
   chatBox.scrollTop = chatBox.scrollHeight;
 
   try {
-    const response = await fetch(ASK_AI_URL, {
+    const res = await fetch(ASK_AI_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question }),
     });
-
-    const data = await response.json();
-    const aiAnswer = data.answer ?? "❌ ไม่มีคำตอบจาก AI";
-
-    chatBox.removeChild(loadingMsg);
-    addMessage(aiAnswer, "AI");
-  } catch (error) {
-    console.error("❌ เกิดข้อผิดพลาด:", error);
-    chatBox.removeChild(loadingMsg);
+    const data = await res.json();
+    chatBox.removeChild(loading);
+    addMessage(data?.answer ?? "❌ ไม่มีคำตอบจาก AI", "AI");
+  } catch (e) {
+    console.error("❌ เกิดข้อผิดพลาด:", e);
+    chatBox.removeChild(loading);
     addMessage("❌ ไม่สามารถติดต่อ AI ได้", "AI");
   }
 }
 
-// สร้างข้อความในกล่องแชท
-function addMessage(text, sender) {
-  const chatBox = document.getElementById("chat-messages");
-  const div = document.createElement("div");
-  div.className = `message ${sender === "คุณ" ? "user" : "ai"}`;
+// ====== Init ======
+async function init() {
+  // 1) โหลดเซ็นเซอร์รอบแรกแบบ await ให้เสร็จจริง
+  const first = await fetchSensorData();
 
-  const name = document.createElement("div");
-  name.className = "sender";
-  name.textContent = sender === "คุณ" ? "คำถามของ คุณ :" : "🤖 คำตอบจาก AI:";
+  // 2) ถ้าได้ค่าแล้ว ค่อยสรุป AI ทันที (ไม่ NaN แน่นอน)
+  if (first) {
+    fetchAISummary(first.light, first.temp, first.humidity);
+  } else {
+    document.getElementById("ai-summary").textContent = "⌛ รอข้อมูลเซนเซอร์...";
+  }
 
-  const msg = document.createElement("div");
-  msg.className = sender === "คุณ" ? "question" : "answer";
-  msg.textContent = text;
+  // 3) ตั้ง interval
+  setInterval(fetchSensorData, 1000);            // ดึงค่าจากเซ็นเซอร์ทุก 1 วิ
+  setInterval(fetchAISummaryOnInterval, 300000); // สรุป AI ทุก 5 นาที
 
-  div.appendChild(name);
-  div.appendChild(msg);
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // 4) bind enter สำหรับถาม AI
+  const input = document.getElementById("user-question");
+  input?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") askAI();
+  });
 }
 
-// แปลงค่าตัวเลขเป็นข้อความแนะนำ (แสง / อุณหภูมิ / ความชื้น)
-function getLightStatusText(light) {
-  if (light > 50000) return "สว่างจัดมาก ☀️";
-  if (light > 10000) return "สว่างมาก🌤";
-  if (light > 5000) return "สว่างปานกลาง 🌥";
-  if (light > 1000) return "ค่อนข้างสว่าง 🌈";
-  if (light > 500) return "แสงพอใช้";
-  if (light > 100) return "แสงน้อย🌙";
-  if (light > 10) return "มืดสลัว 🌑";
-  return "มืดมากๆ 🕳️";
-}
-
-function getTempStatusText(temp) {
-  if (temp > 35) return "อุณหภูมิร้อนมาก ⚠️";
-  if (temp >= 30) return "อุณหภูมิร้อน 🔥";
-  if (temp >= 25) return "อุณหภูมิอุ่นๆ 🌞";
-  if (temp >= 20) return "อุณหภูมิพอดี 🌤";
-  return "อุณหูมิเย็น ❄️";
-}
-
-function getHumidityStatusText(humidity) {
-  if (humidity > 85) return "ชื้นมาก อากาศอึดอัด 🌧️";
-  if (humidity > 70) return "อากาศชื้น เหนียวตัว 💦";
-  if (humidity > 60) return "เริ่มชื้น 🌫️";
-  if (humidity > 40) return "อากาศสบาย ✅";
-  if (humidity > 30) return "ค่อนข้างแห้ง 💨";
-  if (humidity > 20) return "แห้งมาก 🥵";
-  return "อากาศแห้งมาก 🏜️";
-}
-
-// ดึงข้อมูลวันที่/เวลาแบบไทย
-function getThaiDateParts(date) {
-  const optionsDate = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
-  const optionsTime = { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false };
-  const thDateFormatter = new Intl.DateTimeFormat("th-TH", optionsDate);
-  const thTimeFormatter = new Intl.DateTimeFormat("th-TH", optionsTime);
-  const parts = thDateFormatter.formatToParts(date);
-  const time = thTimeFormatter.format(date);
-  return {
-    dayOfWeek: parts.find((p) => p.type === "weekday")?.value ?? "",
-    day: parts.find((p) => p.type === "day")?.value ?? "",
-    month: parts.find((p) => p.type === "month")?.value ?? "",
-    year: parts.find((p) => p.type === "year")?.value ?? "",
-    time,
-  };
-}
-
-// ฟังก์ชันวิเคราะห์อัตโนมัติทุก 1 นาที
-function fetchAISummaryOnInterval() {
-  const light = parseFloat(document.getElementById("light").textContent);
-  const temp = parseFloat(document.getElementById("temp").textContent);
-  const humidity = parseFloat(document.getElementById("humidity").textContent);
-  if (isNaN(light) || isNaN(temp) || isNaN(humidity)) return;
-  fetchAISummary(light, temp, humidity);
-}
-
-// เริ่มโหลดเมื่อหน้าเว็บพร้อม
-window.addEventListener("load", () => {
-  fetchSensorData();
-  setInterval(fetchSensorData, 1000); // ดึงค่าจากเซนเซอร์ทุก 1 วินาที
-  fetchAISummaryOnInterval();         // เรียกวิเคราะห์คำแนะนำทันที
-  setInterval(fetchAISummaryOnInterval, 300000); // จากนั้นทำทุก 5 นาที
-});
-
-// รองรับ Enter เพื่อถาม AI
-document.getElementById("user-question").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") askAI();
-});
+window.addEventListener("load", init);
