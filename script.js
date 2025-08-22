@@ -1,4 +1,4 @@
-const BASE_URL = "https://represents-cakes-indices-assets.trycloudflare.com";
+const BASE_URL = "https://ce395backend-1.onrender.com";
 const API_URL = `${BASE_URL}/latest`;
 const ASK_AI_URL = `${BASE_URL}/ask-ai`;
 
@@ -103,7 +103,7 @@ function addMessage(text, sender) {
 
   const name = document.createElement("div");
   name.className = "sender";
-  name.textContent = sender === "คุณ" ? "คุณ:" : "🤖AI:";
+  name.textContent = sender === "คุณ" ? "คำถามของ คุณ :" : "🤖 คำตอบจาก AI:";
 
   const msg = document.createElement("div");
   msg.className = sender === "คุณ" ? "question" : "answer";
@@ -117,31 +117,31 @@ function addMessage(text, sender) {
 
 // แปลงค่าตัวเลขเป็นข้อความแนะนำ (แสง / อุณหภูมิ / ความชื้น)
 function getLightStatusText(light) {
-  if (light > 50000) return "สว่างจัดมาก";
-  if (light > 10000) return "สว่างมาก";
-  if (light > 5000) return "สว่างปานกลาง";
-  if (light > 1000) return "ค่อนข้างสว่าง";
+  if (light > 50000) return "สว่างจัดมาก ☀️";
+  if (light > 10000) return "สว่างมาก🌤";
+  if (light > 5000) return "สว่างปานกลาง 🌥";
+  if (light > 1000) return "ค่อนข้างสว่าง 🌈";
   if (light > 500) return "แสงพอใช้";
-  if (light > 100) return "แสงน้อย";
-  if (light > 10) return "มืดสลัว";
-  return "มืดมาก";
+  if (light > 100) return "แสงน้อย🌙";
+  if (light > 10) return "มืดสลัว 🌑";
+  return "มืดมากๆ 🕳️";
 }
 
 function getTempStatusText(temp) {
-  if (temp > 35) return "อุณหภูมิร้อนมาก";
-  if (temp >= 30) return "อุณหภูมิร้อน";
-  if (temp >= 25) return "อุณหภูมิอุ่นๆ";
-  if (temp >= 20) return "อุณหภูมิพอดี";
-  return "อุณหูมิเย็น";
+  if (temp > 35) return "อุณหภูมิร้อนมาก ⚠️";
+  if (temp >= 30) return "อุณหภูมิร้อน 🔥";
+  if (temp >= 25) return "อุณหภูมิอุ่นๆ 🌞";
+  if (temp >= 20) return "อุณหภูมิพอดี 🌤";
+  return "อุณหูมิเย็น ❄️";
 }
 
 function getHumidityStatusText(humidity) {
-  if (humidity > 85) return "ชื้นมาก อากาศอึดอัด";
-  if (humidity > 70) return "อากาศชื้น เหนียวตัว";
-  if (humidity > 60) return "เริ่มชื้น";
-  if (humidity > 40) return "อากาศสบาย";
-  if (humidity > 30) return "ค่อนข้างแห้ง";
-  if (humidity > 20) return "แห้งมาก";
+  if (humidity > 85) return "ชื้นมาก อากาศอึดอัด 🌧️";
+  if (humidity > 70) return "อากาศชื้น เหนียวตัว 💦";
+  if (humidity > 60) return "เริ่มชื้น 🌫️";
+  if (humidity > 40) return "อากาศสบาย ✅";
+  if (humidity > 30) return "ค่อนข้างแห้ง 💨";
+  if (humidity > 20) return "แห้งมาก 🥵";
   return "อากาศแห้งมาก 🏜️";
 }
 
@@ -175,8 +175,8 @@ function fetchAISummaryOnInterval() {
 window.addEventListener("load", () => {
   fetchSensorData();
   setInterval(fetchSensorData, 1000); // ดึงค่าจากเซนเซอร์ทุก 1 วินาที
-  // fetchAISummaryOnInterval();         // เรียกวิเคราะห์คำแนะนำทันที
-  // setInterval(fetchAISummaryOnInterval, 60000); // จากนั้นทำทุก 1 นาที
+  fetchAISummaryOnInterval();         // เรียกวิเคราะห์คำแนะนำทันที
+  setInterval(fetchAISummaryOnInterval, 300000); // จากนั้นทำทุก 5 นาที
 });
 
 // รองรับ Enter เพื่อถาม AI
